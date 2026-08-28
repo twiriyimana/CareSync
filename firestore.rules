@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn(){return request.auth!=null;}
+  function isAdmin(){return signedIn()&&get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role=="admin";}
+  match /users/{id}{allow read:if signedIn()&&(request.auth.uid==id||isAdmin());allow create:if signedIn()&&request.auth.uid==id;allow update:if signedIn()&&(request.auth.uid==id||isAdmin());allow delete:if isAdmin();}
+  match /patients/{id}{allow read,write:if signedIn()&&(request.auth.uid==id||isAdmin());}
+  match /doctors/{id}{allow read:if signedIn();allow create,update:if signedIn()&&(request.auth.uid==id||isAdmin());allow delete:if isAdmin();}
+  match /appointments/{id}{allow read:if signedIn()&&(resource.data.patientId==request.auth.uid||resource.data.doctorId==request.auth.uid||isAdmin());allow create:if signedIn()&&request.resource.data.patientId==request.auth.uid;allow update:if signedIn()&&(resource.data.patientId==request.auth.uid||resource.data.doctorId==request.auth.uid||isAdmin());}
+  match /medicalRecords/{id}{allow read:if signedIn()&&(resource.data.patientId==request.auth.uid||resource.data.doctorId==request.auth.uid||isAdmin());allow create:if signedIn()&&(request.resource.data.doctorId==request.auth.uid||isAdmin());}
+  match /prescriptions/{id}{allow read:if signedIn()&&(resource.data.patientId==request.auth.uid||resource.data.doctorId==request.auth.uid||isAdmin());allow create:if signedIn()&&(request.resource.data.doctorId==request.auth.uid||isAdmin());}
+  match /messages/{id}{allow read:if signedIn()&&(resource.data.senderId==request.auth.uid||resource.data.receiverId==request.auth.uid||isAdmin());allow create:if signedIn()&&request.resource.data.senderId==request.auth.uid;}
+ }
+}

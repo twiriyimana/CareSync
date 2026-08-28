@@ -1,0 +1,3 @@
+import {addDoc,collection,getDocs,query,serverTimestamp,where} from "firebase/firestore"; import {db} from "../firebase/config";
+export async function getPatientAppointments(patientId:string){const s=await getDocs(query(collection(db,"appointments"),where("patientId","==",patientId)));return s.docs.map(x=>({id:x.id,...x.data()}))}
+export async function createAppointment(data:{patientId:string;doctorId:string;patientName:string;doctorName:string;date:string;time:string;reason:string}){return addDoc(collection(db,"appointments"),{...data,status:"pending",paymentStatus:"unpaid",createdAt:serverTimestamp()})}

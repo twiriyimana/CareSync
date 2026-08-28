@@ -1,0 +1,4 @@
+{
+  "expo":{"name":"CareSync","slug":"caresync","version":"1.0.0","orientation":"portrait","scheme":"caresync","userInterfaceStyle":"light","plugins":["expo-router","expo-secure-store"],
+  "android":{"package":"com.caresync.app"},"ios":{"bundleIdentifier":"com.caresync.app"}}
+}
